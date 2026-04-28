@@ -33,7 +33,7 @@ export default function OperadoresPage() {
 
   const cargarOperadores = async () => {
     try {
-      const res = await fetch('http://localhost:3002/api/operadores');
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/operadores');
       const data = await res.json();
       setOperadores(data);
     } catch {
@@ -50,7 +50,7 @@ export default function OperadoresPage() {
     }
     setGuardando(true);
     try {
-      const res = await fetch('http://localhost:3002/api/operadores', {
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/operadores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

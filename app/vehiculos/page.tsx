@@ -31,7 +31,7 @@ export default function VehiculosPage() {
 
   const cargarVehiculos = async () => {
     try {
-      const res = await fetch('http://localhost:3002/api/vehiculos');
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/vehiculos');
       const data = await res.json();
       setVehiculos(data);
     } catch {
@@ -48,7 +48,7 @@ export default function VehiculosPage() {
     }
     setGuardando(true);
     try {
-      const res = await fetch('http://localhost:3002/api/vehiculos', {
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/vehiculos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

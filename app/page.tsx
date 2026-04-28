@@ -15,7 +15,7 @@ export default function LoginPage() {
     setCargando(true);
 
     try {
-      const res = await fetch('http://localhost:3002/api/operadores/login', {
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/operadores/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, pin }),

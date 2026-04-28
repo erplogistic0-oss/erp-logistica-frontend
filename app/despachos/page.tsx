@@ -47,9 +47,9 @@ export default function DespachosPage() {
   const cargarTodo = async () => {
     try {
       const [resD, resO, resV] = await Promise.all([
-        fetch('http://localhost:3002/api/despachos'),
-        fetch('http://localhost:3002/api/operadores'),
-        fetch('http://localhost:3002/api/vehiculos'),
+        fetch('https://erp-logistica-backend-production.up.railway.app/api/despachos'),
+        fetch('https://erp-logistica-backend-production.up.railway.app/api/operadores'),
+        fetch('https://erp-logistica-backend-production.up.railway.app/api/vehiculos'),
       ]);
       setDespachos(await resD.json());
       setOperadores(await resO.json());
@@ -68,7 +68,7 @@ export default function DespachosPage() {
     }
     setGuardando(true);
     try {
-      const res = await fetch('http://localhost:3002/api/despachos', {
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/despachos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -95,7 +95,7 @@ export default function DespachosPage() {
   };
 
   const cambiarEstado = async (id: string, estado: string) => {
-    await fetch(`http://localhost:3002/api/despachos/${id}/estado`, {
+    await fetch(`https://erp-logistica-backend-production.up.railway.app/api/despachos/${id}/estado`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ estado }),

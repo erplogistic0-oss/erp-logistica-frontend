@@ -35,8 +35,8 @@ export default function DashboardPage() {
   const cargarDatos = async () => {
     try {
       const [resD, resA] = await Promise.all([
-        fetch('http://localhost:3002/api/despachos'),
-        fetch('http://localhost:3002/api/alertas'),
+        fetch('https://erp-logistica-backend-production.up.railway.app/api/despachos'),
+        fetch('https://erp-logistica-backend-production.up.railway.app/api/alertas'),
       ]);
       setDespachos(await resD.json());
       setAlertas(await resA.json());

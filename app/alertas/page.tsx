@@ -25,7 +25,7 @@ export default function AlertasPage() {
 
   const cargarAlertas = async () => {
     try {
-      const res = await fetch('http://localhost:3002/api/alertas');
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/alertas');
       const data = await res.json();
       setAlertas(data);
     } catch {
@@ -37,7 +37,7 @@ export default function AlertasPage() {
 
   const resolverAlerta = async (id: string) => {
     try {
-      await fetch(`http://localhost:3002/api/alertas/${id}/resolver`, {
+      await fetch(`https://erp-logistica-backend-production.up.railway.app/api/alertas/${id}/resolver`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });

@@ -36,7 +36,7 @@ export default function ProductosPage() {
 
   const cargarProductos = async () => {
     try {
-      const res = await fetch('http://localhost:3002/api/productos');
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/productos');
       const data = await res.json();
       setProductos(data);
     } catch {
@@ -53,7 +53,7 @@ export default function ProductosPage() {
     }
     setGuardando(true);
     try {
-      const res = await fetch('http://localhost:3002/api/productos', {
+      const res = await fetch('https://erp-logistica-backend-production.up.railway.app/api/productos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
