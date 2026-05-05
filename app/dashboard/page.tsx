@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const generarOrden = async () => {
     setGenerando(true);
     try {
-      const res = await fetch(`${API}/api/ordenes-auto/generar`, { method: 'POST' });
+      const res = await fetch(`${API}/api/ordenes-ia/generar`, { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
         alert(`✅ Orden generada: ${data.guia.numero_guia}\nCliente: ${data.guia.cliente_nombre}\n\nRevisa tu correo y las Guías de Remisión.`);
