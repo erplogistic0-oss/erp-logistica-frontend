@@ -30,11 +30,9 @@ export default function AdminPage() {
     const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
     const [cargando, setCargando] = useState(true);
 
-    // Form operador
     const [formOp, setFormOp] = useState({ nombre: '', usuario: '', pin_acceso: '', rol: 'chofer', telefono: '' });
     const [guardandoOp, setGuardandoOp] = useState(false);
 
-    // Form vehiculo
     const [formVeh, setFormVeh] = useState({ placa: '', tipo: '', capacidad_kg: '' });
     const [guardandoVeh, setGuardandoVeh] = useState(false);
 
@@ -79,6 +77,18 @@ export default function AdminPage() {
         } finally {
             setGuardandoOp(false);
         }
+    };
+
+    const eliminarOperador = async (id: string, nombre: string) => {
+        if (!confirm(`¿Eliminar a ${nombre}?`)) return;
+        await fetch(`${API}/api/operadores/${id}`, { method: 'DELETE' });
+        cargarDatos();
+    };
+
+    const eliminarVehiculo = async (id: string, placa: string) => {
+        if (!confirm(`¿Eliminar vehículo ${placa}?`)) return;
+        await fetch(`${API}/api/vehiculos/${id}`, { method: 'DELETE' });
+        cargarDatos();
     };
 
     const toggleActivo = async (op: Operador) => {
@@ -150,7 +160,6 @@ export default function AdminPage() {
             <div className="max-w-5xl mx-auto px-4 py-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">⚙️ Panel de Administración</h2>
 
-                {/* Tabs */}
                 <div className="flex gap-2 mb-6">
                     <button onClick={() => setTab('operadores')}
                         className={`px-5 py-2 rounded-lg font-semibold text-sm transition ${tab === 'operadores' ? 'bg-purple-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
@@ -164,7 +173,6 @@ export default function AdminPage() {
 
                 {tab === 'operadores' && (
                     <div>
-                        {/* Formulario nuevo operador */}
                         <div className="bg-white rounded-xl shadow p-6 mb-6">
                             <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Operador</h3>
                             <div className="grid grid-cols-2 gap-4">
@@ -181,7 +189,7 @@ export default function AdminPage() {
                                     onChange={e => setFormOp({ ...formOp, telefono: e.target.value })}
                                     className="border rounded-lg px-3 py-2 text-sm" />
                                 <select value={formOp.rol} onChange={e => setFormOp({ ...formOp, rol: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm">
+                                    className="border rounded-lg px-3 py-2 text-sm col-span-2">
                                     <option value="chofer">Chofer</option>
                                     <option value="auxiliar">Auxiliar</option>
                                     <option value="supervisor">Supervisor</option>
@@ -194,7 +202,6 @@ export default function AdminPage() {
                             </button>
                         </div>
 
-                        {/* Lista operadores */}
                         <div className="bg-white rounded-xl shadow p-6">
                             <h3 className="font-bold text-gray-700 mb-4">👷 Operadores registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
@@ -203,15 +210,19 @@ export default function AdminPage() {
                                         <div key={op.id} className="flex items-center justify-between border rounded-lg px-4 py-3">
                                             <div>
                                                 <p className="font-semibold text-gray-800">{op.nombre}</p>
-                                                <p className="text-sm text-gray-500">@{op.usuario} · {op.telefono}</p>
+                                                <p className="text-sm text-gray-500">@{op.usuario} · {op.telefono || 'Sin teléfono'}</p>
                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2">
                                                 <span className={`text-xs px-2 py-1 rounded-full font-semibold ${colorRol[op.rol] || 'bg-gray-100 text-gray-600'}`}>
                                                     {op.rol}
                                                 </span>
                                                 <button onClick={() => toggleActivo(op)}
                                                     className={`text-xs px-3 py-1 rounded-lg font-semibold ${op.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                     {op.activo ? '✅ Activo' : '❌ Inactivo'}
+                                                </button>
+                                                <button onClick={() => eliminarOperador(op.id, op.nombre)}
+                                                    className="text-xs px-3 py-1 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
+                                                    🗑️
                                                 </button>
                                             </div>
                                         </div>
@@ -224,7 +235,6 @@ export default function AdminPage() {
 
                 {tab === 'vehiculos' && (
                     <div>
-                        {/* Formulario nuevo vehículo */}
                         <div className="bg-white rounded-xl shadow p-6 mb-6">
                             <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Vehículo</h3>
                             <div className="grid grid-cols-3 gap-4">
@@ -244,7 +254,6 @@ export default function AdminPage() {
                             </button>
                         </div>
 
-                        {/* Lista vehículos */}
                         <div className="bg-white rounded-xl shadow p-6">
                             <h3 className="font-bold text-gray-700 mb-4">🚐 Vehículos registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
@@ -255,10 +264,16 @@ export default function AdminPage() {
                                                 <p className="font-semibold text-gray-800">{veh.placa}</p>
                                                 <p className="text-sm text-gray-500">{veh.tipo} · {veh.capacidad_kg} kg</p>
                                             </div>
-                                            <button onClick={() => toggleDisponible(veh)}
-                                                className={`text-xs px-3 py-1 rounded-lg font-semibold ${veh.disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                {veh.disponible ? '✅ Disponible' : '❌ No disponible'}
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => toggleDisponible(veh)}
+                                                    className={`text-xs px-3 py-1 rounded-lg font-semibold ${veh.disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                    {veh.disponible ? '✅ Disponible' : '❌ No disponible'}
+                                                </button>
+                                                <button onClick={() => eliminarVehiculo(veh.id, veh.placa)}
+                                                    className="text-xs px-3 py-1 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
+                                                    🗑️
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
