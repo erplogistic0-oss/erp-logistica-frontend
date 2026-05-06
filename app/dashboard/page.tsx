@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const generarOrden = async () => {
     setGenerando(true);
     try {
-      const res = await fetch(`${API}/api/ordenes-ia/generar`, { method: 'POST' });
+      const res = await fetch(`${API}/api/ordenes-auto/generar`, { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
         alert(`✅ Orden generada: ${data.guia.numero_guia}\nCliente: ${data.guia.cliente_nombre}\n\nRevisa tu correo y las Guías de Remisión.`);
@@ -85,82 +85,89 @@ export default function DashboardPage() {
     cancelado: 'bg-red-100 text-red-700',
   };
 
+  const modulos = [
+    { label: 'Despachos', icon: '📦', ruta: '/despachos', color: 'hover:border-yellow-400' },
+    { label: 'Productos', icon: '🥤', ruta: '/productos', color: 'hover:border-blue-400' },
+    { label: 'Alertas', icon: '🔔', ruta: '/alertas', color: 'hover:border-red-400' },
+    { label: 'Operadores', icon: '👷', ruta: '/operadores', color: 'hover:border-green-400' },
+    { label: 'Vehículos', icon: '🚐', ruta: '/vehiculos', color: 'hover:border-purple-400' },
+    { label: 'Guías de Remisión', icon: '📋', ruta: '/guias-remision', color: 'hover:border-orange-400' },
+  ];
+
   return (
-    <main className="min-h-screen bg-gray-100">
-      <nav className="bg-red-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <main className="min-h-screen bg-gray-50">
+      {/* Navbar */}
+      <nav className="bg-red-600 text-white px-6 py-3 flex justify-between items-center shadow-lg">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🚛</span>
+          <img src="/impemar-logo.png" alt="IMPEMAR GROUP" className="h-10 w-10 rounded-full object-cover bg-white p-0.5 shadow" />
           <div>
             <h1 className="font-bold text-lg leading-none">LogiControl</h1>
-            <p className="text-xs text-red-200">IMPEMAR GROUP</p>
+            <p className="text-xs text-red-200">IMPEMAR GROUP — Supervisor</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm hidden sm:block">👤 {operador?.nombre}</span>
-          <button onClick={cerrarSesion} className="bg-white text-red-600 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition">
+          <span className="text-sm hidden sm:block bg-red-700 px-3 py-1 rounded-full">👤 {operador?.nombre}</span>
+          <button onClick={cerrarSesion} className="bg-white text-red-600 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-red-50 transition shadow">
             Salir
           </button>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">📊 Resumen del día</h2>
 
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">📊 Resumen del día</h2>
+            <p className="text-gray-500 text-sm mt-1">{new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+        </div>
+
+        {/* Tarjetas estadísticas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow p-5 text-center">
-            <p className="text-3xl font-bold text-yellow-500">{pendientes}</p>
-            <p className="text-sm text-gray-500 mt-1">Pendientes</p>
-          </div>
-          <div className="bg-white rounded-xl shadow p-5 text-center">
-            <p className="text-3xl font-bold text-blue-500">{enRuta}</p>
-            <p className="text-sm text-gray-500 mt-1">En ruta</p>
-          </div>
-          <div className="bg-white rounded-xl shadow p-5 text-center">
-            <p className="text-3xl font-bold text-green-500">{completados}</p>
-            <p className="text-sm text-gray-500 mt-1">Completados</p>
-          </div>
-          <div className="bg-white rounded-xl shadow p-5 text-center">
-            <p className="text-3xl font-bold text-red-500">{alertasSinResolver}</p>
-            <p className="text-sm text-gray-500 mt-1">Alertas</p>
-          </div>
-        </div>
-
-        {/* Botón simulador */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <h3 className="font-bold text-gray-700 mb-2">🤖 Simulador de Órdenes — Arca Continental</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Genera automáticamente una orden de carga simulando un pedido de canal moderno (Tambo, Plaza Vea, Tottus, etc.)
-          </p>
-          <button
-            onClick={generarOrden}
-            disabled={generando}
-            className="bg-red-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
-          >
-            {generando ? '⏳ Generando orden...' : '🤖 Simular orden de Arca Continental'}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'Despachos', icon: '📦', ruta: '/despachos' },
-            { label: 'Productos', icon: '🥤', ruta: '/productos' },
-            { label: 'Alertas', icon: '🔔', ruta: '/alertas' },
-            { label: 'Operadores', icon: '👷', ruta: '/operadores' },
-            { label: 'Vehículos', icon: '🚐', ruta: '/vehiculos' },
-            { label: 'Guías de Remisión', icon: '📋', ruta: '/guias-remision' },
+            { valor: pendientes, label: 'Pendientes', color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200', icon: '⏳' },
+            { valor: enRuta, label: 'En ruta', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200', icon: '🚛' },
+            { valor: completados, label: 'Completados', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-200', icon: '✅' },
+            { valor: alertasSinResolver, label: 'Alertas', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', icon: '🔔' },
           ].map((item) => (
-            <button
-              key={item.ruta}
-              onClick={() => router.push(item.ruta)}
-              className="bg-white rounded-xl shadow p-5 flex items-center gap-3 hover:shadow-md hover:bg-red-50 transition text-left"
-            >
-              <span className="text-2xl">{item.icon}</span>
+            <div key={item.label} className={`${item.bg} border ${item.border} rounded-xl p-5 text-center shadow-sm`}>
+              <p className="text-2xl mb-1">{item.icon}</p>
+              <p className={`text-3xl font-bold ${item.color}`}>{item.valor}</p>
+              <p className="text-sm text-gray-500 mt-1">{item.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Simulador */}
+        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg p-6 mb-8 text-white">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg mb-1">🤖 Simulador de Órdenes — Arca Continental</h3>
+              <p className="text-red-200 text-sm mb-4">Genera automáticamente una orden de carga simulando un pedido de canal moderno (Tambo, Plaza Vea, Tottus, etc.)</p>
+              <button onClick={generarOrden} disabled={generando}
+                className="bg-white text-red-600 font-bold px-6 py-2.5 rounded-xl hover:bg-red-50 transition disabled:opacity-50 shadow">
+                {generando ? '⏳ Generando orden...' : '🤖 Simular orden de Arca Continental'}
+              </button>
+            </div>
+            <img src="/impemar-logo.png" alt="IMPEMAR" className="h-16 w-16 rounded-full object-cover border-2 border-red-400 hidden sm:block" />
+          </div>
+        </div>
+
+        {/* Módulos */}
+        <h3 className="font-bold text-gray-700 mb-4">🗂️ Módulos del sistema</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+          {modulos.map((item) => (
+            <button key={item.ruta} onClick={() => router.push(item.ruta)}
+              className={`bg-white rounded-xl shadow-sm border-2 border-transparent p-5 flex items-center gap-3 hover:shadow-md ${item.color} transition text-left`}>
+              <span className="text-3xl">{item.icon}</span>
               <span className="font-semibold text-gray-700">{item.label}</span>
             </button>
           ))}
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
+        {/* Últimos despachos */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="font-bold text-gray-700 mb-4">📋 Últimos despachos</h3>
           {cargando ? (
             <p className="text-gray-400 text-sm">Cargando...</p>
@@ -171,23 +178,21 @@ export default function DashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-gray-500 border-b">
-                    <th className="pb-2">N° Orden</th>
-                    <th className="pb-2">Estado</th>
-                    <th className="pb-2">Fecha</th>
+                    <th className="pb-3 font-semibold">N° Orden</th>
+                    <th className="pb-3 font-semibold">Estado</th>
+                    <th className="pb-3 font-semibold">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
                   {despachos.slice(0, 8).map((d) => (
                     <tr key={d.id} className="border-b last:border-0 hover:bg-gray-50">
-                      <td className="py-2 font-mono font-semibold">{d.numero_orden || '—'}</td>
-                      <td className="py-2">
+                      <td className="py-3 font-mono font-semibold text-gray-800">{d.numero_orden || '—'}</td>
+                      <td className="py-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorEstado[d.estado] || 'bg-gray-100 text-gray-600'}`}>
                           {d.estado}
                         </span>
                       </td>
-                      <td className="py-2 text-gray-400">
-                        {new Date(d.fecha_despacho).toLocaleDateString('es-PE')}
-                      </td>
+                      <td className="py-3 text-gray-400">{new Date(d.fecha_despacho).toLocaleDateString('es-PE')}</td>
                     </tr>
                   ))}
                 </tbody>
