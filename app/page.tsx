@@ -26,9 +26,10 @@ export default function LoginPage() {
       if (res.ok) {
         localStorage.setItem('operador', JSON.stringify(data.operador));
 
-        // Redirigir según el rol
         const rol = data.operador?.rol || data.rol;
-        if (rol === 'auxiliar') {
+        if (rol === 'admin') {
+          router.push('/admin');
+        } else if (rol === 'auxiliar') {
           router.push('/dashboard-auxiliar');
         } else {
           router.push('/dashboard');
