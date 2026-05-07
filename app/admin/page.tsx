@@ -29,6 +29,15 @@ interface Rol {
     descripcion: string;
 }
 
+// Iconos SVG
+const IconUsers = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+const IconTruck = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>;
+const IconTag = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>;
+const IconTrash = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
+const IconRefresh = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
+const IconUser = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
+const IconPlus = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>;
+
 export default function AdminPage() {
     const router = useRouter();
     const [tab, setTab] = useState<'operadores' | 'vehiculos' | 'roles'>('operadores');
@@ -39,10 +48,8 @@ export default function AdminPage() {
 
     const [formOp, setFormOp] = useState({ nombre: '', usuario: '', pin_acceso: '', rol: 'chofer', telefono: '' });
     const [guardandoOp, setGuardandoOp] = useState(false);
-
     const [formVeh, setFormVeh] = useState({ placa: '', tipo: '', capacidad_kg: '' });
     const [guardandoVeh, setGuardandoVeh] = useState(false);
-
     const [formRol, setFormRol] = useState({ nombre: '', descripcion: '' });
     const [guardandoRol, setGuardandoRol] = useState(false);
 
@@ -81,7 +88,7 @@ export default function AdminPage() {
             if (res.ok) {
                 setFormOp({ nombre: '', usuario: '', pin_acceso: '', rol: roles[0]?.nombre || 'chofer', telefono: '' });
                 cargarDatos();
-                alert('✅ Operador creado');
+                alert('Operador creado correctamente');
             } else {
                 const d = await res.json();
                 alert('Error: ' + d.error);
@@ -124,7 +131,7 @@ export default function AdminPage() {
             if (res.ok) {
                 setFormVeh({ placa: '', tipo: '', capacidad_kg: '' });
                 cargarDatos();
-                alert('✅ Vehículo creado');
+                alert('Vehículo creado correctamente');
             } else {
                 const d = await res.json();
                 alert('Error: ' + d.error);
@@ -155,7 +162,7 @@ export default function AdminPage() {
             if (res.ok) {
                 setFormRol({ nombre: '', descripcion: '' });
                 cargarDatos();
-                alert('✅ Rol creado');
+                alert('Rol creado correctamente');
             } else {
                 const d = await res.json();
                 alert('Error: ' + d.error);
@@ -186,14 +193,13 @@ export default function AdminPage() {
     };
 
     const tabs = [
-        { key: 'operadores', label: '👷 Operadores', count: operadores.length },
-        { key: 'vehiculos', label: '🚐 Vehículos', count: vehiculos.length },
-        { key: 'roles', label: '🏷️ Roles', count: roles.length },
+        { key: 'operadores', label: 'Operadores', icon: <IconUsers />, count: operadores.length },
+        { key: 'vehiculos', label: 'Vehículos', icon: <IconTruck />, count: vehiculos.length },
+        { key: 'roles', label: 'Roles', icon: <IconTag />, count: roles.length },
     ];
 
     return (
         <main className="min-h-screen bg-gray-50">
-            {/* Navbar */}
             <nav className="bg-purple-700 text-white px-6 py-3 flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
                     <img src="/impemar-logo.png" alt="IMPEMAR GROUP" className="h-10 w-10 rounded-full object-cover bg-white p-0.5 shadow" />
@@ -202,18 +208,23 @@ export default function AdminPage() {
                         <p className="text-xs text-purple-200">IMPEMAR GROUP — Administración</p>
                     </div>
                 </div>
-                <button onClick={cerrarSesion} className="bg-white text-purple-700 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-purple-50 transition shadow">
-                    Salir
-                </button>
+                <div className="flex items-center gap-3">
+                    <button onClick={cargarDatos} className="bg-purple-600 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-purple-800 transition flex items-center gap-1">
+                        <IconRefresh /> Actualizar
+                    </button>
+                    <button onClick={cerrarSesion} className="bg-white text-purple-700 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-purple-50 transition shadow">
+                        Salir
+                    </button>
+                </div>
             </nav>
 
             <div className="max-w-5xl mx-auto px-4 py-8">
 
-                {/* Header con stats */}
+                {/* Header */}
                 <div className="bg-gradient-to-r from-purple-700 to-purple-800 rounded-2xl shadow-lg p-6 mb-8 text-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold mb-1">⚙️ Panel de Administración</h2>
+                            <h2 className="text-2xl font-bold mb-1">Panel de Administración</h2>
                             <p className="text-purple-200 text-sm">Gestión de personal, flota y roles del sistema</p>
                         </div>
                         <img src="/impemar-logo.png" alt="IMPEMAR" className="h-16 w-16 rounded-full object-cover border-2 border-purple-400 hidden sm:block" />
@@ -240,8 +251,8 @@ export default function AdminPage() {
                         <button key={t.key} onClick={() => setTab(t.key as any)}
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 ${tab === t.key ? 'bg-purple-700 text-white shadow' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                                 }`}>
-                            {t.label}
-                            <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === t.key ? 'bg-purple-500' : 'bg-gray-100 text-gray-500'}`}>
+                            {t.icon} {t.label}
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === t.key ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                                 {t.count}
                             </span>
                         </button>
@@ -251,7 +262,7 @@ export default function AdminPage() {
                 {tab === 'operadores' && (
                     <div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-                            <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Operador</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconPlus /> Nuevo Operador</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <input placeholder="Nombre completo" value={formOp.nombre}
                                     onChange={e => setFormOp({ ...formOp, nombre: e.target.value })}
@@ -265,7 +276,6 @@ export default function AdminPage() {
                                     className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                                 <input placeholder="Teléfono (9 dígitos)" value={formOp.telefono} type="number"
                                     onChange={e => { if (e.target.value.length <= 9) setFormOp({ ...formOp, telefono: e.target.value }); }}
-                                    maxLength={9}
                                     className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                                 <select value={formOp.rol} onChange={e => setFormOp({ ...formOp, rol: e.target.value })}
                                     className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm col-span-2 focus:outline-none focus:ring-2 focus:ring-purple-400">
@@ -275,13 +285,13 @@ export default function AdminPage() {
                                 </select>
                             </div>
                             <button onClick={crearOperador} disabled={guardandoOp}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
-                                {guardandoOp ? 'Guardando...' : '➕ Crear Operador'}
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow flex items-center gap-2">
+                                <IconPlus /> {guardandoOp ? 'Guardando...' : 'Crear Operador'}
                             </button>
                         </div>
 
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h3 className="font-bold text-gray-700 mb-4">👷 Operadores registrados</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconUsers /> Operadores registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {operadores.map(op => (
@@ -301,11 +311,11 @@ export default function AdminPage() {
                                                 </span>
                                                 <button onClick={() => toggleActivo(op)}
                                                     className={`text-xs px-3 py-1.5 rounded-lg font-semibold ${op.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                    {op.activo ? '✅ Activo' : '❌ Inactivo'}
+                                                    {op.activo ? 'Activo' : 'Inactivo'}
                                                 </button>
                                                 <button onClick={() => eliminarOperador(op.id, op.nombre)}
-                                                    className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
-                                                    🗑️
+                                                    className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                                    <IconTrash />
                                                 </button>
                                             </div>
                                         </div>
@@ -319,7 +329,7 @@ export default function AdminPage() {
                 {tab === 'vehiculos' && (
                     <div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-                            <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Vehículo</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconPlus /> Nuevo Vehículo</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 <input placeholder="Placa (Ej: ABC-123)" value={formVeh.placa}
                                     onChange={e => setFormVeh({ ...formVeh, placa: e.target.value })}
@@ -332,20 +342,20 @@ export default function AdminPage() {
                                     className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                             </div>
                             <button onClick={crearVehiculo} disabled={guardandoVeh}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
-                                {guardandoVeh ? 'Guardando...' : '➕ Crear Vehículo'}
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow flex items-center gap-2">
+                                <IconPlus /> {guardandoVeh ? 'Guardando...' : 'Crear Vehículo'}
                             </button>
                         </div>
 
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h3 className="font-bold text-gray-700 mb-4">🚐 Vehículos registrados</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconTruck /> Vehículos registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {vehiculos.map(veh => (
                                         <div key={veh.id} className="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3 hover:bg-gray-50 transition">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
-                                                    🚐
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                                    <IconTruck />
                                                 </div>
                                                 <div>
                                                     <p className="font-semibold text-gray-800">{veh.placa}</p>
@@ -355,11 +365,11 @@ export default function AdminPage() {
                                             <div className="flex items-center gap-2">
                                                 <button onClick={() => toggleDisponible(veh)}
                                                     className={`text-xs px-3 py-1.5 rounded-lg font-semibold ${veh.disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                    {veh.disponible ? '✅ Disponible' : '❌ No disponible'}
+                                                    {veh.disponible ? 'Disponible' : 'No disponible'}
                                                 </button>
                                                 <button onClick={() => eliminarVehiculo(veh.id, veh.placa)}
-                                                    className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
-                                                    🗑️
+                                                    className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                                    <IconTrash />
                                                 </button>
                                             </div>
                                         </div>
@@ -373,7 +383,7 @@ export default function AdminPage() {
                 {tab === 'roles' && (
                     <div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-                            <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Rol</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconPlus /> Nuevo Rol</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <input placeholder="Nombre del rol (Ej: almacenero)" value={formRol.nombre}
                                     onChange={e => setFormRol({ ...formRol, nombre: e.target.value })}
@@ -383,20 +393,20 @@ export default function AdminPage() {
                                     className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                             </div>
                             <button onClick={crearRol} disabled={guardandoRol}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
-                                {guardandoRol ? 'Guardando...' : '➕ Crear Rol'}
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow flex items-center gap-2">
+                                <IconPlus /> {guardandoRol ? 'Guardando...' : 'Crear Rol'}
                             </button>
                         </div>
 
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h3 className="font-bold text-gray-700 mb-4">🏷️ Roles registrados</h3>
+                            <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2"><IconTag /> Roles registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {roles.map(r => (
                                         <div key={r.id} className="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3 hover:bg-gray-50 transition">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
-                                                    🏷️
+                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                                    <IconTag />
                                                 </div>
                                                 <div>
                                                     <p className="font-semibold text-gray-800 capitalize">{r.nombre}</p>
@@ -404,8 +414,8 @@ export default function AdminPage() {
                                                 </div>
                                             </div>
                                             <button onClick={() => eliminarRol(r.id, r.nombre)}
-                                                className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
-                                                🗑️
+                                                className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                                <IconTrash />
                                             </button>
                                         </div>
                                     ))}

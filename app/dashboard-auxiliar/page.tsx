@@ -72,7 +72,6 @@ export default function DashboardAuxiliarPage() {
 
     return (
         <main className="min-h-screen bg-gray-50">
-            {/* Navbar */}
             <nav className="bg-green-700 text-white px-6 py-3 flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
                     <img src="/impemar-logo.png" alt="IMPEMAR GROUP" className="h-10 w-10 rounded-full object-cover bg-white p-0.5 shadow" />
@@ -82,72 +81,76 @@ export default function DashboardAuxiliarPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-sm hidden sm:block bg-green-800 px-3 py-1 rounded-full">👤 {operador?.nombre}</span>
-                    <button onClick={cerrarSesion}
-                        className="bg-white text-green-700 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-green-50 transition shadow">
+                    <span className="text-sm hidden sm:block bg-green-800 px-3 py-1 rounded-full flex items-center gap-1">
+                        <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        {operador?.nombre}
+                    </span>
+                    <button onClick={cerrarSesion} className="bg-white text-green-700 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-green-50 transition shadow">
                         Salir
                     </button>
                 </div>
             </nav>
 
             <div className="max-w-5xl mx-auto px-4 py-8">
-
-                {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-800">📦 Panel Auxiliar — Canal Moderno</h2>
+                        <h2 className="text-2xl font-bold text-gray-800">Panel Auxiliar — Canal Moderno</h2>
                         <p className="text-gray-500 text-sm mt-1">{new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     </div>
-                    <button onClick={cargarGuias} className="bg-green-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-800 transition">
-                        🔄 Actualizar
+                    <button onClick={cargarGuias} className="flex items-center gap-2 bg-white border border-gray-200 text-gray-600 text-sm px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Actualizar
                     </button>
                 </div>
 
-                {/* Estadísticas */}
                 <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center shadow-sm">
-                        <p className="text-2xl mb-1">✅</p>
-                        <p className="text-3xl font-bold text-green-600">{totalRecepcionados}</p>
-                        <p className="text-sm text-gray-500 mt-1">Recepcionados</p>
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="text-3xl font-bold text-green-600">{totalRecepcionados}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 font-medium">Recepcionados</p>
                     </div>
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-5 text-center shadow-sm">
-                        <p className="text-2xl mb-1">❌</p>
-                        <p className="text-3xl font-bold text-red-500">{totalNoRecepcionados}</p>
-                        <p className="text-sm text-gray-500 mt-1">No recepcionados</p>
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-5 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="text-3xl font-bold text-red-500">{totalNoRecepcionados}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 font-medium">No recepcionados</p>
                     </div>
-                    <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 text-center shadow-sm">
-                        <p className="text-2xl mb-1">⏳</p>
-                        <p className="text-3xl font-bold text-purple-500">{totalLlego}</p>
-                        <p className="text-sm text-gray-500 mt-1">Esperando confirmación</p>
+                    <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="text-3xl font-bold text-purple-500">{totalLlego}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 font-medium">Esperando confirmación</p>
                     </div>
                 </div>
 
-                {/* Filtros */}
-                <div className="flex gap-2 mb-6">
+                <div className="flex gap-2 mb-6 flex-wrap">
                     {[
-                        { key: 'todas', label: '📋 Todas' },
-                        { key: 'recepcionado', label: '✅ Recepcionadas' },
-                        { key: 'no_recepcionado', label: '❌ No recepcionadas' },
+                        { key: 'todas', label: 'Todas' },
+                        { key: 'recepcionado', label: 'Recepcionadas' },
+                        { key: 'no_recepcionado', label: 'No recepcionadas' },
                     ].map(({ key, label }) => (
                         <button key={key} onClick={() => setFiltro(key as any)}
-                            className={`px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm ${filtro === key ? 'bg-green-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                            className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${filtro === key ? 'bg-green-700 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                                 }`}>
                             {label}
                         </button>
                     ))}
                 </div>
 
-                {/* Lista de guías */}
                 <div className="space-y-4">
                     {cargando ? (
                         <div className="text-center py-12 text-gray-400">
-                            <p className="text-4xl mb-2">⏳</p>
-                            <p>Cargando guías...</p>
+                            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            Cargando guías...
                         </div>
                     ) : guiasFiltradas.length === 0 ? (
                         <div className="text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm text-gray-400">
-                            <p className="text-4xl mb-2">📭</p>
-                            <p>No hay guías en este estado</p>
+                            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            No hay guías en este estado
                         </div>
                     ) : (
                         guiasFiltradas.map(g => (
@@ -160,16 +163,28 @@ export default function DashboardAuxiliarPage() {
                                                 {g.estado.replace('_', ' ')}
                                             </span>
                                         </div>
-                                        <p className="text-gray-700 text-sm font-medium">👤 {g.cliente_nombre}</p>
-                                        <p className="text-gray-500 text-xs">RUC: {g.cliente_ruc}</p>
+                                        <p className="text-gray-700 text-sm font-medium">{g.cliente_nombre} <span className="text-gray-400 font-normal">RUC: {g.cliente_ruc}</span></p>
                                         <div className="mt-2 bg-gray-50 rounded-lg p-2">
-                                            <p className="text-gray-500 text-xs">📍 <span className="font-medium">{g.punto_partida}</span></p>
-                                            <p className="text-gray-500 text-xs">🏁 <span className="font-medium">{g.punto_llegada}</span></p>
+                                            <p className="text-gray-500 text-xs">
+                                                <span className="font-semibold text-gray-600">Origen:</span> {g.punto_partida}
+                                            </p>
+                                            <p className="text-gray-500 text-xs mt-1">
+                                                <span className="font-semibold text-gray-600">Destino:</span> {g.punto_llegada}
+                                            </p>
                                         </div>
-                                        <div className="flex gap-3 mt-2 text-xs text-gray-400">
-                                            <span>🚛 {g.vehiculos?.placa || '—'}</span>
-                                            <span>👷 {g.operadores?.nombre || '—'}</span>
-                                            <span>📅 {g.fecha_traslado}</span>
+                                        <div className="flex gap-4 mt-2 text-xs text-gray-400">
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>
+                                                {g.vehiculos?.placa || '—'}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                                {g.operadores?.nombre || '—'}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                {g.fecha_traslado}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
