@@ -104,6 +104,7 @@ export default function AdminPage() {
     };
 
     const toggleActivo = async (op: Operador) => {
+        if (!confirm(`¿${op.activo ? 'Desactivar' : 'Activar'} a ${op.nombre}?`)) return;
         await fetch(`${API}/api/operadores/${op.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -166,10 +167,7 @@ export default function AdminPage() {
 
     const eliminarRol = async (id: string, nombre: string) => {
         const rolesBase = ['admin', 'supervisor', 'auxiliar', 'chofer'];
-        if (rolesBase.includes(nombre)) {
-            alert('No se puede eliminar un rol base del sistema');
-            return;
-        }
+        if (rolesBase.includes(nombre)) { alert('No se puede eliminar un rol base del sistema'); return; }
         if (!confirm(`¿Eliminar rol "${nombre}"?`)) return;
         await fetch(`${API}/api/roles/${id}`, { method: 'DELETE' });
         cargarDatos();
@@ -187,97 +185,126 @@ export default function AdminPage() {
         chofer: 'bg-yellow-100 text-yellow-700',
     };
 
+    const tabs = [
+        { key: 'operadores', label: '👷 Operadores', count: operadores.length },
+        { key: 'vehiculos', label: '🚐 Vehículos', count: vehiculos.length },
+        { key: 'roles', label: '🏷️ Roles', count: roles.length },
+    ];
+
     return (
-        <main className="min-h-screen bg-gray-100">
-            <nav className="bg-purple-700 text-white px-6 py-4 flex justify-between items-center shadow">
+        <main className="min-h-screen bg-gray-50">
+            {/* Navbar */}
+            <nav className="bg-purple-700 text-white px-6 py-3 flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
-                    <span className="text-2xl">⚙️</span>
+                    <img src="/impemar-logo.png" alt="IMPEMAR GROUP" className="h-10 w-10 rounded-full object-cover bg-white p-0.5 shadow" />
                     <div>
                         <h1 className="font-bold text-lg leading-none">LogiControl</h1>
-                        <p className="text-xs text-purple-200">IMPEMAR GROUP — Panel Admin</p>
+                        <p className="text-xs text-purple-200">IMPEMAR GROUP — Administración</p>
                     </div>
                 </div>
-                <button onClick={cerrarSesion} className="bg-white text-purple-700 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-purple-50 transition">
+                <button onClick={cerrarSesion} className="bg-white text-purple-700 text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-purple-50 transition shadow">
                     Salir
                 </button>
             </nav>
 
             <div className="max-w-5xl mx-auto px-4 py-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">⚙️ Panel de Administración</h2>
 
+                {/* Header con stats */}
+                <div className="bg-gradient-to-r from-purple-700 to-purple-800 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold mb-1">⚙️ Panel de Administración</h2>
+                            <p className="text-purple-200 text-sm">Gestión de personal, flota y roles del sistema</p>
+                        </div>
+                        <img src="/impemar-logo.png" alt="IMPEMAR" className="h-16 w-16 rounded-full object-cover border-2 border-purple-400 hidden sm:block" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-6">
+                        <div className="bg-purple-600 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">{operadores.length}</p>
+                            <p className="text-purple-200 text-xs mt-1">Operadores</p>
+                        </div>
+                        <div className="bg-purple-600 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">{vehiculos.length}</p>
+                            <p className="text-purple-200 text-xs mt-1">Vehículos</p>
+                        </div>
+                        <div className="bg-purple-600 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">{roles.length}</p>
+                            <p className="text-purple-200 text-xs mt-1">Roles</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Tabs */}
                 <div className="flex gap-2 mb-6">
-                    <button onClick={() => setTab('operadores')}
-                        className={`px-5 py-2 rounded-lg font-semibold text-sm transition ${tab === 'operadores' ? 'bg-purple-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
-                        👷 Operadores
-                    </button>
-                    <button onClick={() => setTab('vehiculos')}
-                        className={`px-5 py-2 rounded-lg font-semibold text-sm transition ${tab === 'vehiculos' ? 'bg-purple-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
-                        🚐 Vehículos
-                    </button>
-                    <button onClick={() => setTab('roles')}
-                        className={`px-5 py-2 rounded-lg font-semibold text-sm transition ${tab === 'roles' ? 'bg-purple-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
-                        🏷️ Roles
-                    </button>
+                    {tabs.map(t => (
+                        <button key={t.key} onClick={() => setTab(t.key as any)}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 ${tab === t.key ? 'bg-purple-700 text-white shadow' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                                }`}>
+                            {t.label}
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === t.key ? 'bg-purple-500' : 'bg-gray-100 text-gray-500'}`}>
+                                {t.count}
+                            </span>
+                        </button>
+                    ))}
                 </div>
 
                 {tab === 'operadores' && (
                     <div>
-                        <div className="bg-white rounded-xl shadow p-6 mb-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                             <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Operador</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <input placeholder="Nombre completo" value={formOp.nombre}
                                     onChange={e => setFormOp({ ...formOp, nombre: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                                 <input placeholder="Usuario" value={formOp.usuario}
                                     onChange={e => setFormOp({ ...formOp, usuario: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
-                                <input placeholder="PIN (4-6 dígitos)" value={formOp.pin_acceso}
-                                    onChange={e => {
-                                        if (e.target.value.length <= 6) setFormOp({ ...formOp, pin_acceso: e.target.value });
-                                    }}
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                <input placeholder="PIN (4-6 dígitos)" value={formOp.pin_acceso} type="password"
+                                    onChange={e => { if (e.target.value.length <= 6) setFormOp({ ...formOp, pin_acceso: e.target.value }); }}
                                     maxLength={6}
-                                    className="border rounded-lg px-3 py-2 text-sm"
-                                    type="password" />
-                                <input placeholder="Teléfono (9 dígitos)" value={formOp.telefono}
-                                    onChange={e => {
-                                        if (e.target.value.length <= 9) setFormOp({ ...formOp, telefono: e.target.value });
-                                    }}
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                <input placeholder="Teléfono (9 dígitos)" value={formOp.telefono} type="number"
+                                    onChange={e => { if (e.target.value.length <= 9) setFormOp({ ...formOp, telefono: e.target.value }); }}
                                     maxLength={9}
-                                    className="border rounded-lg px-3 py-2 text-sm"
-                                    type="number" />
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                                 <select value={formOp.rol} onChange={e => setFormOp({ ...formOp, rol: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm col-span-2">
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm col-span-2 focus:outline-none focus:ring-2 focus:ring-purple-400">
                                     {roles.map(r => (
                                         <option key={r.id} value={r.nombre}>{r.nombre.charAt(0).toUpperCase() + r.nombre.slice(1)}</option>
                                     ))}
                                 </select>
                             </div>
                             <button onClick={crearOperador} disabled={guardandoOp}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2 rounded-lg hover:bg-purple-800 transition disabled:opacity-50">
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
                                 {guardandoOp ? 'Guardando...' : '➕ Crear Operador'}
                             </button>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow p-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h3 className="font-bold text-gray-700 mb-4">👷 Operadores registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {operadores.map(op => (
-                                        <div key={op.id} className="flex items-center justify-between border rounded-lg px-4 py-3">
-                                            <div>
-                                                <p className="font-semibold text-gray-800">{op.nombre}</p>
-                                                <p className="text-sm text-gray-500">@{op.usuario} · {op.telefono || 'Sin teléfono'}</p>
+                                        <div key={op.id} className="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3 hover:bg-gray-50 transition">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg">
+                                                    {op.nombre.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800">{op.nombre}</p>
+                                                    <p className="text-sm text-gray-500">@{op.usuario} · {op.telefono || 'Sin teléfono'}</p>
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <span className={`text-xs px-2 py-1 rounded-full font-semibold ${colorRol[op.rol] || 'bg-gray-100 text-gray-600'}`}>
                                                     {op.rol}
                                                 </span>
                                                 <button onClick={() => toggleActivo(op)}
-                                                    className={`text-xs px-3 py-1 rounded-lg font-semibold ${op.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                    className={`text-xs px-3 py-1.5 rounded-lg font-semibold ${op.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                     {op.activo ? '✅ Activo' : '❌ Inactivo'}
                                                 </button>
                                                 <button onClick={() => eliminarOperador(op.id, op.nombre)}
-                                                    className="text-xs px-3 py-1 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
+                                                    className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
                                                     🗑️
                                                 </button>
                                             </div>
@@ -291,42 +318,47 @@ export default function AdminPage() {
 
                 {tab === 'vehiculos' && (
                     <div>
-                        <div className="bg-white rounded-xl shadow p-6 mb-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                             <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Vehículo</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 <input placeholder="Placa (Ej: ABC-123)" value={formVeh.placa}
                                     onChange={e => setFormVeh({ ...formVeh, placa: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                                 <input placeholder="Tipo (Ej: camión 3t)" value={formVeh.tipo}
                                     onChange={e => setFormVeh({ ...formVeh, tipo: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
-                                <input placeholder="Capacidad kg" value={formVeh.capacidad_kg}
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                <input placeholder="Capacidad kg" value={formVeh.capacidad_kg} type="number"
                                     onChange={e => setFormVeh({ ...formVeh, capacidad_kg: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" type="number" />
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                             </div>
                             <button onClick={crearVehiculo} disabled={guardandoVeh}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2 rounded-lg hover:bg-purple-800 transition disabled:opacity-50">
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
                                 {guardandoVeh ? 'Guardando...' : '➕ Crear Vehículo'}
                             </button>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow p-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h3 className="font-bold text-gray-700 mb-4">🚐 Vehículos registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {vehiculos.map(veh => (
-                                        <div key={veh.id} className="flex items-center justify-between border rounded-lg px-4 py-3">
-                                            <div>
-                                                <p className="font-semibold text-gray-800">{veh.placa}</p>
-                                                <p className="text-sm text-gray-500">{veh.tipo} · {veh.capacidad_kg} kg</p>
+                                        <div key={veh.id} className="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3 hover:bg-gray-50 transition">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
+                                                    🚐
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800">{veh.placa}</p>
+                                                    <p className="text-sm text-gray-500">{veh.tipo} · {veh.capacidad_kg} kg</p>
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <button onClick={() => toggleDisponible(veh)}
-                                                    className={`text-xs px-3 py-1 rounded-lg font-semibold ${veh.disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                    className={`text-xs px-3 py-1.5 rounded-lg font-semibold ${veh.disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                     {veh.disponible ? '✅ Disponible' : '❌ No disponible'}
                                                 </button>
                                                 <button onClick={() => eliminarVehiculo(veh.id, veh.placa)}
-                                                    className="text-xs px-3 py-1 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
+                                                    className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
                                                     🗑️
                                                 </button>
                                             </div>
@@ -340,34 +372,39 @@ export default function AdminPage() {
 
                 {tab === 'roles' && (
                     <div>
-                        <div className="bg-white rounded-xl shadow p-6 mb-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                             <h3 className="font-bold text-gray-700 mb-4">➕ Nuevo Rol</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <input placeholder="Nombre del rol (Ej: almacenero)" value={formRol.nombre}
                                     onChange={e => setFormRol({ ...formRol, nombre: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
-                                <input placeholder="Descripción" value={formRol.descripcion}
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                <input placeholder="Descripción del rol" value={formRol.descripcion}
                                     onChange={e => setFormRol({ ...formRol, descripcion: e.target.value })}
-                                    className="border rounded-lg px-3 py-2 text-sm" />
+                                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
                             </div>
                             <button onClick={crearRol} disabled={guardandoRol}
-                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2 rounded-lg hover:bg-purple-800 transition disabled:opacity-50">
+                                className="mt-4 bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition disabled:opacity-50 shadow">
                                 {guardandoRol ? 'Guardando...' : '➕ Crear Rol'}
                             </button>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow p-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h3 className="font-bold text-gray-700 mb-4">🏷️ Roles registrados</h3>
                             {cargando ? <p className="text-gray-400 text-sm">Cargando...</p> : (
                                 <div className="space-y-3">
                                     {roles.map(r => (
-                                        <div key={r.id} className="flex items-center justify-between border rounded-lg px-4 py-3">
-                                            <div>
-                                                <p className="font-semibold text-gray-800 capitalize">{r.nombre}</p>
-                                                <p className="text-sm text-gray-500">{r.descripcion || 'Sin descripción'}</p>
+                                        <div key={r.id} className="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3 hover:bg-gray-50 transition">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+                                                    🏷️
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800 capitalize">{r.nombre}</p>
+                                                    <p className="text-sm text-gray-500">{r.descripcion || 'Sin descripción'}</p>
+                                                </div>
                                             </div>
                                             <button onClick={() => eliminarRol(r.id, r.nombre)}
-                                                className="text-xs px-3 py-1 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
+                                                className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700">
                                                 🗑️
                                             </button>
                                         </div>
