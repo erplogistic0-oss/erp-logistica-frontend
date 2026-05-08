@@ -165,7 +165,7 @@ export default function OperadoresPage() {
             <p className="p-6 text-gray-400 text-sm">No hay operadores registrados.</p>
           ) : (
             <div className="divide-y">
-              {operadores.map(o => (
+              {operadores.filter(o => o.rol !== 'admin').map(o => (
                 <div key={o.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition">
                   <div className="flex items-center gap-4">
                     <div className="bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow">
