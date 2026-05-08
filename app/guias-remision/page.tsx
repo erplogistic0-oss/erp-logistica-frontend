@@ -17,8 +17,21 @@ interface Guia {
     fecha_emision: string;
     fecha_traslado: string;
     motivo_traslado: string;
+    operador_id: string | null;
+    vehiculo_id: string | null;
     operadores?: { nombre: string };
     vehiculos?: { placa: string };
+}
+
+interface Operador {
+    id: string;
+    nombre: string;
+}
+
+interface Vehiculo {
+    id: string;
+    placa: string;
+    tipo: string;
 }
 
 export default function GuiasRemisionPage() {
@@ -26,18 +39,24 @@ export default function GuiasRemisionPage() {
     const [guias, setGuias] = useState<Guia[]>([]);
     const [cargando, setCargando] = useState(true);
     const [filtro, setFiltro] = useState('todas');
+    const [choferes, setChoferes] = useState<Operador[]>([]);
+    const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
+    const [modalGuia, setModalGuia] = useState<Guia | null>(null);
+    const [selChofer, setSelChofer] = useState('');
+    const [selVehiculo, setSelVehiculo] = useState('');
+    const [guardando, setGuardando] = useState(false);
 
     useEffect(() => {
         const op = localStorage.getItem('operador');
         if (!op) { router.push('/'); return; }
         cargarGuias();
+        cargarChoferesYVehiculos();
     }, []);
 
     const cargarGuias = async () => {
         try {
             const res = await fetch(`${API}/api/guias-remision`);
-            const data = await res.json();
-            setGuias(data);
+            setGuias(await res.json());
         } catch {
             console.error('Error cargando guías');
         } finally {
@@ -45,13 +64,46 @@ export default function GuiasRemisionPage() {
         }
     };
 
-    const cambiarEstado = async (id: string, estado: string) => {
-        await fetch(`${API}/api/guias-remision/${id}/estado`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ estado }),
-        });
-        cargarGuias();
+    const cargarChoferesYVehiculos = async () => {
+        try {
+            const [resOp, resVeh] = await Promise.all([
+                fetch(`${API}/api/operadores`),
+                fetch(`${API}/api/vehiculos`),
+            ]);
+            const ops = await resOp.json();
+            const vehs = await resVeh.json();
+            setChoferes(ops.filter((o: any) => o.rol === 'chofer'));
+            setVehiculos(vehs.filter((v: any) => v.disponible));
+        } catch {
+            console.error('Error cargando choferes/vehículos');
+        }
+    };
+
+    const abrirModal = (g: Guia) => {
+        setModalGuia(g);
+        setSelChofer(g.operador_id || '');
+        setSelVehiculo(g.vehiculo_id || '');
+    };
+
+    const guardarAsignacion = async () => {
+        if (!modalGuia) return;
+        setGuardando(true);
+        try {
+            await fetch(`${API}/api/guias-remision/${modalGuia.id}/asignar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    operador_id: selChofer || null,
+                    vehiculo_id: selVehiculo || null,
+                }),
+            });
+            setModalGuia(null);
+            cargarGuias();
+        } catch {
+            alert('Error al guardar');
+        } finally {
+            setGuardando(false);
+        }
     };
 
     const colorEstado = (estado: string) => {
@@ -66,7 +118,6 @@ export default function GuiasRemisionPage() {
     };
 
     const estados = ['todas', 'pendiente', 'en_ruta', 'llego', 'recepcionado', 'no_recepcionado'];
-
     const guiasFiltradas = filtro === 'todas' ? guias : guias.filter(g => g.estado === filtro);
 
     return (
@@ -97,7 +148,6 @@ export default function GuiasRemisionPage() {
                     </div>
                 </div>
 
-                {/* Filtros */}
                 <div className="flex gap-2 mb-6 flex-wrap">
                     {estados.map(e => (
                         <button key={e} onClick={() => setFiltro(e)}
@@ -108,7 +158,6 @@ export default function GuiasRemisionPage() {
                     ))}
                 </div>
 
-                {/* Lista */}
                 {cargando ? (
                     <div className="text-center py-12 text-gray-400">Cargando...</div>
                 ) : guiasFiltradas.length === 0 ? (
@@ -147,31 +196,84 @@ export default function GuiasRemisionPage() {
 
                                 <div className="flex items-center justify-between">
                                     <div className="flex gap-4 text-xs text-gray-400">
-                                        <span>🚛 {g.vehiculos?.placa || '—'}</span>
-                                        <span>👷 {g.operadores?.nombre || '—'}</span>
+                                        <span>🚛 {g.vehiculos?.placa || <span className="text-red-400">Sin vehículo</span>}</span>
+                                        <span>👷 {g.operadores?.nombre || <span className="text-red-400">Sin chofer</span>}</span>
                                         <span>Motivo: {g.motivo_traslado}</span>
                                     </div>
-                                    {g.estado === 'pendiente' && (
-                                        <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg font-semibold">
-                                            Esperando salida del chofer
-                                        </span>
-                                    )}
-                                    {g.estado === 'en_ruta' && (
-                                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-semibold">
-                                            Camión en ruta
-                                        </span>
-                                    )}
-                                    {g.estado === 'llego' && (
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg font-semibold">
-                                            Esperando confirmación del cliente
-                                        </span>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {g.estado === 'pendiente' && (
+                                            <button onClick={() => abrirModal(g)}
+                                                className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition font-semibold flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                                Asignar chofer
+                                            </button>
+                                        )}
+                                        {g.estado === 'pendiente' && (
+                                            <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg font-semibold">
+                                                Esperando salida
+                                            </span>
+                                        )}
+                                        {g.estado === 'en_ruta' && (
+                                            <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-semibold">
+                                                Camión en ruta
+                                            </span>
+                                        )}
+                                        {g.estado === 'llego' && (
+                                            <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg font-semibold">
+                                                Esperando confirmación del cliente
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+
+            {/* Modal asignar chofer */}
+            {modalGuia && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                        <h3 className="font-bold text-gray-800 text-lg mb-1">Asignar Chofer y Vehículo</h3>
+                        <p className="text-gray-500 text-sm mb-6">Guía {modalGuia.numero_guia} — {modalGuia.cliente_nombre}</p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Chofer</label>
+                                <select value={selChofer} onChange={e => setSelChofer(e.target.value)}
+                                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="">— Sin asignar —</option>
+                                    {choferes.map(c => (
+                                        <option key={c.id} value={c.id}>{c.nombre}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Vehículo</label>
+                                <select value={selVehiculo} onChange={e => setSelVehiculo(e.target.value)}
+                                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="">— Sin asignar —</option>
+                                    {vehiculos.map(v => (
+                                        <option key={v.id} value={v.id}>{v.placa} — {v.tipo}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <button onClick={guardarAsignacion} disabled={guardando}
+                                className="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 transition disabled:opacity-50">
+                                {guardando ? 'Guardando...' : 'Guardar'}
+                            </button>
+                            <button onClick={() => setModalGuia(null)}
+                                className="flex-1 bg-gray-100 text-gray-700 font-semibold py-2.5 rounded-xl hover:bg-gray-200 transition">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
