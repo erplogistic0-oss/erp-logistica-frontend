@@ -152,16 +152,19 @@ export default function GuiasRemisionPage() {
                                         <span>Motivo: {g.motivo_traslado}</span>
                                     </div>
                                     {g.estado === 'pendiente' && (
-                                        <button onClick={() => cambiarEstado(g.id, 'en_ruta')}
-                                            className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition font-semibold">
-                                            Marcar en ruta
-                                        </button>
+                                        <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg font-semibold">
+                                            Esperando salida del chofer
+                                        </span>
                                     )}
                                     {g.estado === 'en_ruta' && (
-                                        <button onClick={() => cambiarEstado(g.id, 'llego')}
-                                            className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition font-semibold">
-                                            Marcar llegó
-                                        </button>
+                                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-semibold">
+                                            Camión en ruta
+                                        </span>
+                                    )}
+                                    {g.estado === 'llego' && (
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg font-semibold">
+                                            Esperando confirmación del cliente
+                                        </span>
                                     )}
                                 </div>
                             </div>
