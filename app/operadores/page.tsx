@@ -165,26 +165,25 @@ export default function OperadoresPage() {
             <p className="p-6 text-gray-400 text-sm">No hay operadores registrados.</p>
           ) : (
             <div className="divide-y">
-              {operadores.filter(o => o.rol !== 'admin').map(o => (
-                <div key={o.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow">
-                      {o.nombre.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-800">{o.nombre}</p>
-                      <p className="text-xs text-gray-400">@{o.usuario} · {o.telefono || 'Sin teléfono'}</p>
-                    </div>
+              {operadores.filter(o => o.rol === 'chofer' || o.rol === 'supervisor').map(o => (<div key={o.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition">
+                <div className="flex items-center gap-4">
+                  <div className="bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow">
+                    {o.nombre.charAt(0).toUpperCase()}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${colorRol[o.rol] || 'bg-gray-100 text-gray-600'}`}>
-                      {o.rol || 'sin rol'}
-                    </span>
-                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${o.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {o.activo ? 'Activo' : 'Inactivo'}
-                    </span>
+                  <div>
+                    <p className="font-semibold text-gray-800">{o.nombre}</p>
+                    <p className="text-xs text-gray-400">@{o.usuario} · {o.telefono || 'Sin teléfono'}</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${colorRol[o.rol] || 'bg-gray-100 text-gray-600'}`}>
+                    {o.rol || 'sin rol'}
+                  </span>
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${o.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {o.activo ? 'Activo' : 'Inactivo'}
+                  </span>
+                </div>
+              </div>
               ))}
             </div>
           )}
