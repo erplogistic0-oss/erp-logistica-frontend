@@ -25,7 +25,10 @@ export default function LoginPage() {
         const rol = data.operador?.rol || data.rol;
         if (rol === 'admin') router.push('/admin');
         else if (rol === 'auxiliar') router.push('/dashboard-auxiliar');
-        else router.push('/dashboard');
+        else if (rol === 'chofer') {
+          setError('Los choferes solo pueden ingresar desde la app móvil');
+          localStorage.removeItem('operador');
+        } else router.push('/dashboard');
       } else {
         setError(data.error || 'Credenciales incorrectas');
       }
