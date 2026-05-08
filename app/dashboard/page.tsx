@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation';
 
 const API = 'https://erp-logistica-backend-production.up.railway.app';
 
-interface Despacho {
-  id: string;
-  numero_orden: string;
-  estado: string;
-  fecha_despacho: string;
-}
-
 interface Alerta {
   id: string;
   mensaje: string;
@@ -20,9 +13,17 @@ interface Alerta {
   created_at: string;
 }
 
+interface Guia {
+  id: string;
+  numero_guia: string;
+  estado: string;
+  cliente_nombre: string;
+  fecha_traslado: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
-  const [despachos, setDespachos] = useState<Despacho[]>([]);
+  const [guias, setGuias] = useState<Guia[]>([]);
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [operador, setOperador] = useState<{ nombre: string } | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -37,11 +38,11 @@ export default function DashboardPage() {
 
   const cargarDatos = async () => {
     try {
-      const [resD, resA] = await Promise.all([
-        fetch(`${API}/api/despachos`),
+      const [resG, resA] = await Promise.all([
+        fetch(`${API}/api/guias-remision`),
         fetch(`${API}/api/alertas`),
       ]);
-      setDespachos(await resD.json());
+      setGuias(await resG.json());
       setAlertas(await resA.json());
     } catch {
       console.error('Error cargando datos');
@@ -73,16 +74,17 @@ export default function DashboardPage() {
     router.push('/');
   };
 
-  const pendientes = despachos.filter(d => d.estado === 'pendiente').length;
-  const enRuta = despachos.filter(d => d.estado === 'en_ruta').length;
-  const completados = despachos.filter(d => d.estado === 'completado').length;
+  const pendientes = guias.filter(g => g.estado === 'pendiente').length;
+  const enRuta = guias.filter(g => g.estado === 'en_ruta').length;
+  const completados = guias.filter(g => g.estado === 'recepcionado').length;
   const alertasSinResolver = alertas.filter(a => !a.resuelta).length;
 
   const colorEstado: Record<string, string> = {
     pendiente: 'bg-yellow-100 text-yellow-700',
     en_ruta: 'bg-blue-100 text-blue-700',
-    completado: 'bg-green-100 text-green-700',
-    cancelado: 'bg-red-100 text-red-700',
+    llego: 'bg-purple-100 text-purple-700',
+    recepcionado: 'bg-green-100 text-green-700',
+    no_recepcionado: 'bg-red-100 text-red-700',
   };
 
   const modulos = [
@@ -149,7 +151,7 @@ export default function DashboardPage() {
           {[
             { valor: pendientes, label: 'Pendientes', color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200', icon: <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
             { valor: enRuta, label: 'En ruta', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200', icon: <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg> },
-            { valor: completados, label: 'Completados', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-200', icon: <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+            { valor: completados, label: 'Recepcionados', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-200', icon: <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
             { valor: alertasSinResolver, label: 'Alertas', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', icon: <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg> },
           ].map((item) => (
             <div key={item.label} className={`${item.bg} border ${item.border} rounded-xl p-5 shadow-sm`}>
@@ -192,31 +194,39 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-700 mb-4">Últimos despachos</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-gray-700">Últimas guías de remisión</h3>
+            <button onClick={() => router.push('/guias-remision')}
+              className="text-xs text-red-600 font-semibold hover:underline">
+              Ver todas →
+            </button>
+          </div>
           {cargando ? (
             <p className="text-gray-400 text-sm">Cargando...</p>
-          ) : despachos.length === 0 ? (
-            <p className="text-gray-400 text-sm">No hay despachos registrados.</p>
+          ) : guias.length === 0 ? (
+            <p className="text-gray-400 text-sm">No hay guías registradas.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-gray-500 border-b">
-                    <th className="pb-3 font-semibold">N° Orden</th>
+                    <th className="pb-3 font-semibold">N° Guía</th>
+                    <th className="pb-3 font-semibold">Cliente</th>
                     <th className="pb-3 font-semibold">Estado</th>
                     <th className="pb-3 font-semibold">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {despachos.slice(0, 8).map((d) => (
-                    <tr key={d.id} className="border-b last:border-0 hover:bg-gray-50">
-                      <td className="py-3 font-mono font-semibold text-gray-800">{d.numero_orden || '—'}</td>
+                  {guias.slice(0, 8).map((g) => (
+                    <tr key={g.id} className="border-b last:border-0 hover:bg-gray-50">
+                      <td className="py-3 font-mono font-semibold text-gray-800">{g.numero_guia}</td>
+                      <td className="py-3 text-gray-600">{g.cliente_nombre}</td>
                       <td className="py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorEstado[d.estado] || 'bg-gray-100 text-gray-600'}`}>
-                          {d.estado}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorEstado[g.estado] || 'bg-gray-100 text-gray-600'}`}>
+                          {g.estado.replace('_', ' ')}
                         </span>
                       </td>
-                      <td className="py-3 text-gray-400">{new Date(d.fecha_despacho).toLocaleDateString('es-PE')}</td>
+                      <td className="py-3 text-gray-400">{g.fecha_traslado}</td>
                     </tr>
                   ))}
                 </tbody>
